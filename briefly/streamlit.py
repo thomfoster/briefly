@@ -1,11 +1,11 @@
 import streamlit as st
-from overview import overview_feedback_functions
-from business_challenge import business_challenge_feedback_functions
+from overview import overview_feedback_functions, overview_examples
+from business_challenge import business_challenge_feedback_functions, business_challenge_examples
 
 st.set_page_config(initial_sidebar_state='collapsed', layout='wide')
 
 
-def render_module(module_name, module_description, feedback_functions):
+def render_module(module_name, module_description, feedback_functions, module_examples=[]):
     
     feedback_functions = [st.cache_data(show_spinner=False)(ff) for ff in feedback_functions]
     
@@ -14,14 +14,15 @@ def render_module(module_name, module_description, feedback_functions):
     
     def set_state(new_state):
         st.session_state[module_name] = new_state
-  
     
     c1, spacer, c2, spacer2 = st.columns([4,1,2,1])
 
     with c1:
         st.header(module_name.capitalize())
         st.write(module_description)
-        module_value = c1.text_input(f"Write your {module_name} here", value=st.session_state[module_name],)
+        examples = '\n'.join(['- '+example for example in module_examples])
+        st.markdown(f"Some examples: \n{examples}")
+        module_value = c1.text_input(f"Your {module_name} here:", value=st.session_state[module_name],)
 
     with c2:
         
@@ -44,9 +45,7 @@ def render_module(module_name, module_description, feedback_functions):
                         c2.text("")
 
 
-# OVERVIEW
-
-
+# RENDERING
     
 render_module(
     module_name="Brief overview",
@@ -57,19 +56,17 @@ A great brief overview is short, direct and engaging. Try writing a one-sentence
 
 For example: *This campaign is designed to drive sales of Peanuts Magazine by engaging school children and communicating that Peanuts is the coolest magazine to be seen reading*
     """,
-    feedback_functions=overview_feedback_functions
+    feedback_functions=overview_feedback_functions,
+    module_examples=overview_examples
 )
             
 st.divider()
-
-# BUSINESS CHALLENGE
   
-
-    
 render_module(
     module_name="business challenge",
     module_description="""
 Start with where your business currently is (and what challenge you might be facing), then explain what needs to change to improve things.
     """,
-    feedback_functions=business_challenge_feedback_functions
+    feedback_functions=business_challenge_feedback_functions,
+    module_examples=business_challenge_examples
 )
