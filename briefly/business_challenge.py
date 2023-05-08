@@ -18,3 +18,5 @@ def business_challenge_is_clear(business_challenge):
         return (True, business_challenge)
     else:
         return (False, business_challenge.upper())
+    
+business_challenge_feedback_functions = [business_challenge_is_clear, business_challenge_is_inspiring]

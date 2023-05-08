@@ -18,3 +18,5 @@ def overview_is_clear(overview):
         return (True, overview)
     else:
         return (False, overview.upper())
+    
+overview_feedback_functions = [overview_is_inspiring, overview_is_clear]

@@ -1,6 +1,6 @@
 import streamlit as st
-from overview import overview_is_clear, overview_is_inspiring
-from business_challenge import business_challenge_is_clear, business_challenge_is_inspiring
+from overview import overview_feedback_functions
+from business_challenge import business_challenge_feedback_functions
 
 st.set_page_config(initial_sidebar_state='collapsed', layout='wide')
 
@@ -57,8 +57,7 @@ A great brief overview is short, direct and engaging. Try writing a one-sentence
 
 For example: *This campaign is designed to drive sales of Peanuts Magazine by engaging school children and communicating that Peanuts is the coolest magazine to be seen reading*
     """,
-    feedback_functions=[overview_is_inspiring,
-                        overview_is_clear]
+    feedback_functions=overview_feedback_functions
 )
             
 st.divider()
@@ -72,5 +71,5 @@ render_module(
     module_description="""
 Start with where your business currently is (and what challenge you might be facing), then explain what needs to change to improve things.
     """,
-    feedback_functions=[business_challenge_is_inspiring, business_challenge_is_clear]
+    feedback_functions=business_challenge_feedback_functions
 )
