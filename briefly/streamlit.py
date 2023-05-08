@@ -22,7 +22,7 @@ def render_module(module_name, module_description, feedback_functions, module_ex
         st.write(module_description)
         examples = '\n'.join(['- '+example for example in module_examples])
         st.markdown(f"Some examples: \n{examples}")
-        module_value = c1.text_input(f"Your {module_name} here:", value=st.session_state[module_name],)
+        module_value = c1.text_area(f"Your {module_name} here:", value=st.session_state[module_name],)
 
     with c2:
         
