@@ -1,7 +1,7 @@
 import openai
+import os
 
-api_key = "31f7f82f-294b-4f57-bee4-95740c738557"
-openai.api_key = "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"
+openai.api_key = os.environ['openai_api_key']
 
 prefix = """
 We are consultants helping to improve the communication between companies and marketing agencies by critiquing the marketing briefs that they give eachother.
