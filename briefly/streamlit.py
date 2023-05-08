@@ -1,10 +1,14 @@
 import streamlit as st
-import time
+from overview import overview_is_clear, overview_is_inspiring
+from business_challenge import business_challenge_is_clear, business_challenge_is_inspiring
 
 st.set_page_config(initial_sidebar_state='collapsed', layout='wide')
 
 
 def render_module(module_name, module_description, feedback_functions):
+    
+    feedback_functions = [st.cache_data(show_spinner=False)(ff) for ff in feedback_functions]
+    
     if module_name not in st.session_state:
         st.session_state[module_name] = ""
     
@@ -25,36 +29,24 @@ def render_module(module_name, module_description, feedback_functions):
         
         if len(module_value) > 0:
             
+            # with st.spinner(f"Running diagnostics on your {module_name}..."):
             for feedback in feedback_functions:
-                is_okay, suggestion = feedback(module_value)
-                if is_okay:
-                    c2.write(f"✅ Great job, your {' '.join(feedback.__name__.split('_'))}!")
-                if not is_okay:
-                    c2.write(f"🤔 We don't think your {' '.join(feedback.__name__.split('_'))} enough.")
-                    c2.write(f"Our suggestion: **{suggestion}**")
-                    c2.button("Accept suggestion", on_click=set_state, args=(suggestion,), key=f"{feedback.__name__}"+"button")
-                    c2.text("")
-                    c2.text("")
+                with st.spinner(f"Checking whether {' '.join(feedback.__name__.split('_'))}..."):
+                    is_okay, suggestion = feedback(module_value)
+                    
+                    if is_okay:
+                        c2.write(f"✅ Great job, your {' '.join(feedback.__name__.split('_'))}!")
+                    if not is_okay:
+                        c2.write(f"🤔 We don't think your {' '.join(feedback.__name__.split('_'))} enough.")
+                        c2.write(f"Our suggestion: **{suggestion}**")
+                        c2.button("Accept suggestion", on_click=set_state, args=(suggestion,), key=f"{feedback.__name__}"+"button")
+                        c2.text("")
+                        c2.text("")
 
 
 # OVERVIEW
 
-@st.cache_data(show_spinner="Checking whether overview is inspiring...")  
-def overview_is_inspiring(overview):
-    # return (True, "") or (False, "Suggestion")
-    if overview.endswith('!!!'):
-        return (True, "")
-    else:
-        return (False, overview + "!!!")
-    
-@st.cache_data(show_spinner="Checking whether overview is clear...")
-def overview_is_clear(overview):
-    time.sleep(4)
-    # return (True, "") or (False, "Suggestion")
-    if overview.upper() == overview:
-        return (True, overview)
-    else:
-        return (False, overview.upper())
+
     
 render_module(
     module_name="Brief overview",
@@ -73,22 +65,7 @@ st.divider()
 
 # BUSINESS CHALLENGE
   
-@st.cache_data(show_spinner="Checking whether business challenge is inspiring...")  
-def business_challenge_is_inspiring(business_challenge):
-    # return (True, "") or (False, "Suggestion")
-    if business_challenge.endswith('!!!'):
-        return (True, "")
-    else:
-        return (False, business_challenge + "!!!")
-    
-@st.cache_data(show_spinner="Checking whether business challenge is clear...")
-def business_challenge_is_clear(business_challenge):
-    time.sleep(4)
-    # return (True, "") or (False, "Suggestion")
-    if business_challenge.upper() == business_challenge:
-        return (True, business_challenge)
-    else:
-        return (False, business_challenge.upper())
+
     
 render_module(
     module_name="business challenge",
