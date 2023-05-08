@@ -1,23 +1,45 @@
 import streamlit as st
 import time
 
-st.header('Brief overview')
-st.write("""
-A great brief overview is short, direct and engaging. Try writing a one-sentence answer to each of these questions:
-- Why are you writing this brief?
-- What is the single most interesting thing about this brief?
+st.set_page_config(initial_sidebar_state='collapsed', layout='wide')
 
-For example: *This campaign is designed to drive sales of Peanuts Magazine by engaging school children and communicating that Peanuts is the coolest magazine to be seen reading*
-"""
-)
 
-if "overview" not in st.session_state:
-    st.session_state.overview = ""
+def render_module(module_name, module_description, feedback_functions):
+    if module_name not in st.session_state:
+        st.session_state[module_name] = ""
     
-def set_overview_state(new_state):
-    st.session_state.overview = new_state
+    def set_state(new_state):
+        st.session_state[module_name] = new_state
   
-st.cache_data()  
+    
+    c1, spacer, c2, spacer2 = st.columns([4,1,2,1])
+
+    with c1:
+        st.header(module_name.capitalize())
+        st.write(module_description)
+        module_value = c1.text_input(f"Write your {module_name} here", value=st.session_state[module_name],)
+
+    with c2:
+        
+        st.text("")
+        
+        if len(module_value) > 0:
+            
+            for feedback in feedback_functions:
+                is_okay, suggestion = feedback(module_value)
+                if is_okay:
+                    c2.write(f"✅ Great job, your {' '.join(feedback.__name__.split('_'))}!")
+                if not is_okay:
+                    c2.write(f"🤔 We don't think your {' '.join(feedback.__name__.split('_'))} enough.")
+                    c2.write(f"Our suggestion: **{suggestion}**")
+                    c2.button("Accept suggestion", on_click=set_state, args=(suggestion,), key=f"{feedback.__name__}"+"button")
+                    c2.text("")
+                    c2.text("")
+
+
+# OVERVIEW
+
+@st.cache_data(show_spinner="Checking whether overview is inspiring...")  
 def overview_is_inspiring(overview):
     # return (True, "") or (False, "Suggestion")
     if overview.endswith('!!!'):
@@ -25,7 +47,7 @@ def overview_is_inspiring(overview):
     else:
         return (False, overview + "!!!")
     
-st.cache_data()
+@st.cache_data(show_spinner="Checking whether overview is clear...")
 def overview_is_clear(overview):
     time.sleep(4)
     # return (True, "") or (False, "Suggestion")
@@ -34,18 +56,44 @@ def overview_is_clear(overview):
     else:
         return (False, overview.upper())
     
-overview = st.text_input("Write your brief overview here", value=st.session_state.overview,)
+render_module(
+    module_name="Brief overview",
+    module_description="""
+A great brief overview is short, direct and engaging. Try writing a one-sentence answer to each of these questions:
+- Why are you writing this brief?
+- What is the single most interesting thing about this brief?
 
-if len(overview) > 0:
-    overview_feedback = [overview_is_inspiring, overview_is_clear]
+For example: *This campaign is designed to drive sales of Peanuts Magazine by engaging school children and communicating that Peanuts is the coolest magazine to be seen reading*
+    """,
+    feedback_functions=[overview_is_inspiring,
+                        overview_is_clear]
+)
+            
+st.divider()
+
+# BUSINESS CHALLENGE
+  
+@st.cache_data(show_spinner="Checking whether business challenge is inspiring...")  
+def business_challenge_is_inspiring(business_challenge):
+    # return (True, "") or (False, "Suggestion")
+    if business_challenge.endswith('!!!'):
+        return (True, "")
+    else:
+        return (False, business_challenge + "!!!")
     
-    for feedback in overview_feedback:
-        with st.spinner(f"Checking whether {' '.join(feedback.__name__.split('_'))}..."):
-            is_okay, suggestion = feedback(overview)
-        if is_okay:
-            st.write(f"✅ Great job, your {' '.join(feedback.__name__.split('_'))}!")
-        if not is_okay:
-            st.write(f"🤔 We don't think your {' '.join(feedback.__name__.split('_'))} enough.")
-            st.write("In a sentence, write the thing that you find most exciting about this brief. It might be the fact that you’re launching a new product, or that certain market factors put you in a uniquely advantageous position.")
-            st.write(f"Our suggestion: **{suggestion}**")
-            st.button("Accept suggestion", on_click=set_overview_state, args=(suggestion,), key=f"{feedback.__name__}"+"button")
+@st.cache_data(show_spinner="Checking whether business challenge is clear...")
+def business_challenge_is_clear(business_challenge):
+    time.sleep(4)
+    # return (True, "") or (False, "Suggestion")
+    if business_challenge.upper() == business_challenge:
+        return (True, business_challenge)
+    else:
+        return (False, business_challenge.upper())
+    
+render_module(
+    module_name="business challenge",
+    module_description="""
+Start with where your business currently is (and what challenge you might be facing), then explain what needs to change to improve things.
+    """,
+    feedback_functions=[business_challenge_is_inspiring, business_challenge_is_clear]
+)
